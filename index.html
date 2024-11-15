@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Wheel</title>
+    <style>
+        /* Basic Styling for the Fortune Wheel */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid #333;
+            background: conic-gradient(
+                #81509b 0 45deg,
+                #3393b4 45deg 90deg,
+                #a0c1d1 90deg 135deg,
+                #e50068 135deg 180deg,
+                #ef4880 180deg 225deg,
+                #fa73b0 225deg 270deg,
+                #f5a3c7 270deg 315deg,
+                #fbd6dd 315deg 360deg
+            );
+            position: absolute;
+            transition: transform 4s ease-out;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #333;
+        }
+        .spin-button {
+            margin-top: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        .wheel-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0px 0px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: black;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        <div class="wheel" id="fortune-wheel">
+            <!-- Labels for each section -->
+            <div class="wheel-label" style="transform: rotate(22.5deg) translate(-20%, -140px) rotate(270deg);">Приз 1</div>
+            <div class="wheel-label" style="transform: rotate(67.5deg) translate(-20%, -140px) rotate(270deg)">Приз 2</div>
+            <div class="wheel-label" style="transform: rotate(112.5deg) translate(-20%, -140px) rotate(270deg);">Приз 3</div>
+            <div class="wheel-label" style="transform: rotate(157.5deg) translate(-20%, -140px) rotate(270deg);">Приз 4</div>
+            <div class="wheel-label" style="transform: rotate(202.5deg) translate(-20%, -140px) rotate(270deg);">Приз 5</div>
+            <div class="wheel-label" style="transform: rotate(247.5deg) translate(-20%, -140px) rotate(270deg);">Приз 6</div>
+            <div class="wheel-label" style="transform: rotate(292.5deg) translate(-20%, -140px) rotate(270deg);">Приз 7</div>
+            <div class="wheel-label" style="transform: rotate(337.5deg) translate(-20%, -140px) rotate(270deg);">Приз 8</div>
+        </div>
+    </div>
+    <button class="spin-button" id="spin-button">Spin</button>
+
+    <script>
+        const wheel = document.getElementById('fortune-wheel');
+        const spinButton = document.getElementById('spin-button');
+        let spinning = false;
+        const totalSections = 8; // Total number of sections
+        const sectionAngle = 360 / totalSections; // Angle of each section
+
+        spinButton.addEventListener('click', () => {
+            if (spinning) return; // Prevent multiple clicks during spin
+
+            spinning = true;
+
+            // Reset the wheel to its initial position before spinning
+            wheel.style.transition = 'none';
+            wheel.style.transform = `rotate(0deg)`;
+
+            setTimeout(() => {
+                wheel.style.transition = 'transform 4s ease-out';
+
+                let spinAmount;
+                let isOnBoundary;
+
+                do {
+                    spinAmount = Math.floor(Math.random() * 360) + 1800; // At least 5 full rotations
+                    const normalizedDegree = (spinAmount % 360 + 360) % 360;
+                    isOnBoundary = normalizedDegree % sectionAngle === 0;
+                } while (isOnBoundary);
+
+                wheel.style.transform = `rotate(${spinAmount}deg)`;
+
+                setTimeout(() => {
+                    spinning = false;
+
+                    // Calculate the section at 0deg (top position)
+                    const normalizedDegree = (spinAmount % 360 + 360) % 360;
+                    const winningSection = totalSections - Math.floor(normalizedDegree / sectionAngle);
+
+                    alert(`Вітаю, Ви виграли Приз № ${winningSection > 0 ? winningSection : totalSections} !!!`);
+                }, 4000); // Match with CSS animation duration
+            }, 10); // Short delay to allow reset
+        });
+    </script>
+</body>
+</html>
